@@ -1,9 +1,5 @@
 import { put, head } from '@vercel/blob';
 
-export const config = {
-  runtime: 'edge',
-};
-
 const BLOB_URL_FILE = 'site-config-data.json';
 
 export default async function handler(req: Request): Promise<Response> {

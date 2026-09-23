@@ -1,26 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import * as contentModule from '../data/content';
+import initialData from '../data/content';
 
-// Extraer listas con máxima compatibilidad de nombres
-const initialCovers = 
-  contentModule.initialCovers || 
-  contentModule.covers || 
-  (contentModule.default && contentModule.default.covers) || [];
+const defaultData = (initialData as Record<string, any>) || {};
 
-const initialPricingTiers = 
-  contentModule.pricingTiers || 
-  contentModule.INITIAL_PRICING_TIERS || 
-  (contentModule.default && contentModule.default.pricingTiers) || [];
-
-const initialFaqs = 
-  contentModule.faqs || 
-  contentModule.INITIAL_FAQS || 
-  (contentModule.default && contentModule.default.faqs) || [];
-
-const initialBooktrailers = 
-  contentModule.booktrailers || 
-  contentModule.INITIAL_BOOKTRAILERS || 
-  (contentModule.default && contentModule.default.booktrailers) || [];
+const initialCovers = defaultData.covers || [];
+const initialPricingTiers = defaultData.pricingTiers || [];
+const initialFaqs = defaultData.faqs || [];
+const initialBooktrailers = defaultData.booktrailers || [];
 
 export const DEFAULT_SITE_CONFIG = {
   covers: initialCovers,
@@ -52,7 +38,6 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [booktrailers, setBooktrailers] = useState<any[]>(initialBooktrailers);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Cargar datos guardados desde Vercel Blob API
   useEffect(() => {
     const fetchRemoteData = async () => {
       try {
