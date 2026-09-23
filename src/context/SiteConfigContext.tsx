@@ -1,12 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import initialData from '../data/content';
-
-const defaultData = (initialData as Record<string, any>) || {};
-
-const initialCovers = defaultData.covers || [];
-const initialPricingTiers = defaultData.pricingTiers || [];
-const initialFaqs = defaultData.faqs || [];
-const initialBooktrailers = defaultData.booktrailers || [];
+import { covers as initialCovers, pricingTiers as initialPricingTiers, faqs as initialFaqs, booktrailers as initialBooktrailers } from '../data/content';
 
 export const DEFAULT_SITE_CONFIG = {
   covers: initialCovers,
