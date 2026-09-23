@@ -1,12 +1,12 @@
 import React from 'react';
 import { SiteConfigProvider } from './context/SiteConfigContext';
-import HeaderAndFooter from './components/HeaderAndFooter';
-import PortadasCarousel from './components/PortadasCarousel';
-import ServicesSection from './components/ServicesSection';
-import TestimonialsCarousel from './components/TestimonialsCarousel';
-import BooktrailersGallery from './components/BooktrailersGallery';
-import PricingAndContact from './components/PricingAndContact';
-import RoyaltyCalculator from './components/RoyaltyCalculator';
+import { HeaderAndFooter } from './components/HeaderAndFooter';
+import { PortadasCarousel } from './components/PortadasCarousel';
+import { ServicesSection } from './components/ServicesSection';
+import { TestimonialsCarousel } from './components/TestimonialsCarousel';
+import { BooktrailersGallery } from './components/BooktrailersGallery';
+import { PricingAndContact } from './components/PricingAndContact';
+import { RoyaltyCalculator } from './components/RoyaltyCalculator';
 
 export default function App() {
   return (
