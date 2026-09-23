@@ -7,10 +7,10 @@ import {
 } from '../data/content';
 
 export const DEFAULT_SITE_CONFIG = {
-  covers: initialCovers,
-  pricingTiers: initialPricingTiers,
-  faqs: initialFaqs,
-  booktrailers: initialBooktrailers,
+  covers: initialCovers || [],
+  pricingTiers: initialPricingTiers || [],
+  faqs: initialFaqs || [],
+  booktrailers: initialBooktrailers || [],
 };
 
 interface SiteConfigContextType {
@@ -30,21 +30,20 @@ interface SiteConfigContextType {
 const SiteConfigContext = createContext<SiteConfigContextType | undefined>(undefined);
 
 export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Inicializamos directamente con los datos locales para renderizado instantáneo
-  const [covers, setCovers] = useState<any[]>(initialCovers);
-  const [pricingTiers, setPricingTiers] = useState<any[]>(initialPricingTiers);
-  const [faqs, setFaqs] = useState<any[]>(initialFaqs);
-  const [booktrailers, setBooktrailers] = useState<any[]>(initialBooktrailers);
+  const [covers, setCovers] = useState<any[]>(Array.isArray(initialCovers) ? initialCovers : []);
+  const [pricingTiers, setPricingTiers] = useState<any[]>(Array.isArray(initialPricingTiers) ? initialPricingTiers : []);
+  const [faqs, setFaqs] = useState<any[]>(Array.isArray(initialFaqs) ? initialFaqs : []);
+  const [booktrailers, setBooktrailers] = useState<any[]>(Array.isArray(initialBooktrailers) ? initialBooktrailers : []);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Sincronizar en segundo plano si existen datos guardados en Vercel Blob
   useEffect(() => {
+    let isMounted = true;
     const fetchRemoteData = async () => {
       try {
         const res = await fetch('/api/content');
         if (res.ok) {
           const data = await res.json();
-          if (data && typeof data === 'object') {
+          if (data && isMounted) {
             if (Array.isArray(data.covers) && data.covers.length > 0) setCovers(data.covers);
             if (Array.isArray(data.pricingTiers) && data.pricingTiers.length > 0) setPricingTiers(data.pricingTiers);
             if (Array.isArray(data.faqs) && data.faqs.length > 0) setFaqs(data.faqs);
@@ -52,11 +51,12 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           }
         }
       } catch (err) {
-        console.warn('Usando configuración local por defecto.', err);
+        console.warn('Cargando valores por defecto...');
       }
     };
 
     fetchRemoteData();
+    return () => { isMounted = false; };
   }, []);
 
   const saveToVercelBlob = async (updatedData: Record<string, any>) => {
@@ -92,11 +92,21 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const resetToDefaults = () => {
-    setCovers(initialCovers);
-    setPricingTiers(initialPricingTiers);
-    setFaqs(initialFaqs);
-    setBooktrailers(initialBooktrailers);
-    saveToVercelBlob(DEFAULT_SITE_CONFIG);
+    const safeCovers = Array.isArray(initialCovers) ? initialCovers : [];
+    const safePricing = Array.isArray(initialPricingTiers) ? initialPricingTiers : [];
+    const safeFaqs = Array.isArray(initialFaqs) ? initialFaqs : [];
+    const safeTrailers = Array.isArray(initialBooktrailers) ? initialBooktrailers : [];
+
+    setCovers(safeCovers);
+    setPricingTiers(safePricing);
+    setFaqs(safeFaqs);
+    setBooktrailers(safeTrailers);
+    saveToVercelBlob({
+      covers: safeCovers,
+      pricingTiers: safePricing,
+      faqs: safeFaqs,
+      booktrailers: safeTrailers,
+    });
   };
 
   const siteConfig = {
@@ -130,7 +140,19 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 export const useSiteConfig = () => {
   const context = useContext(SiteConfigContext);
   if (!context) {
-    throw new Error('useSiteConfig debe ser usado dentro de SiteConfigProvider');
+    return {
+      siteConfig: DEFAULT_SITE_CONFIG,
+      covers: DEFAULT_SITE_CONFIG.covers,
+      pricingTiers: DEFAULT_SITE_CONFIG.pricingTiers,
+      faqs: DEFAULT_SITE_CONFIG.faqs,
+      booktrailers: DEFAULT_SITE_CONFIG.booktrailers,
+      updateCovers: () => {},
+      updatePricingTiers: () => {},
+      updateFaqs: () => {},
+      updateBooktrailers: () => {},
+      resetToDefaults: () => {},
+      isLoading: false,
+    };
   }
   return context;
 };
