@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { covers as initialCovers, pricingTiers as initialPricingTiers, faqs as initialFaqs, booktrailers as initialBooktrailers } from '../data/content';
+import { 
+  covers as initialCovers, 
+  pricingTiers as initialPricingTiers, 
+  faqs as initialFaqs, 
+  booktrailers as initialBooktrailers 
+} from '../data/content';
 
 export const DEFAULT_SITE_CONFIG = {
   covers: initialCovers,
@@ -31,21 +36,22 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [booktrailers, setBooktrailers] = useState<any[]>(initialBooktrailers);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // Cargar datos remotos respetando el fallback local si la nube está vacía
   useEffect(() => {
     const fetchRemoteData = async () => {
       try {
         const res = await fetch('/api/content');
         if (res.ok) {
           const data = await res.json();
-          if (data) {
-            if (data.covers) setCovers(data.covers);
-            if (data.pricingTiers) setPricingTiers(data.pricingTiers);
-            if (data.faqs) setFaqs(data.faqs);
-            if (data.booktrailers) setBooktrailers(data.booktrailers);
+          if (data && typeof data === 'object') {
+            if (Array.isArray(data.covers) && data.covers.length > 0) setCovers(data.covers);
+            if (Array.isArray(data.pricingTiers) && data.pricingTiers.length > 0) setPricingTiers(data.pricingTiers);
+            if (Array.isArray(data.faqs) && data.faqs.length > 0) setFaqs(data.faqs);
+            if (Array.isArray(data.booktrailers) && data.booktrailers.length > 0) setBooktrailers(data.booktrailers);
           }
         }
       } catch {
-        console.warn('Cargando valores por defecto...');
+        console.warn('Cargando valores predeterminados locales...');
       } finally {
         setIsLoading(false);
       }
@@ -62,7 +68,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         body: JSON.stringify(updatedData),
       });
     } catch (err) {
-      console.error('Error al guardar en Vercel Blob:', err);
+      console.error('Error al sincronizar con Vercel Blob:', err);
     }
   };
 
@@ -73,7 +79,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const updatePricingTiers = (newTiers: any[]) => {
     setPricingTiers(newTiers);
-    saveToVercelBlob({ covers, pricingTiers: newTiers, faqs, booktrailers });
+    saveToVercelBlob({ covers, pricingTiers: newTiers, faqs: newTiers, booktrailers });
   };
 
   const updateFaqs = (newFaqs: any[]) => {

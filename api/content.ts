@@ -1,12 +1,12 @@
 import { put, head } from '@vercel/blob';
 
-const BLOB_URL_FILE = 'site-config-data.json';
+const BLOB_FILENAME = 'site-config-data.json';
 
 export default async function handler(req: Request): Promise<Response> {
   if (req.method === 'POST') {
     try {
       const body = await req.json();
-      const blob = await put(BLOB_URL_FILE, JSON.stringify(body), {
+      const blob = await put(BLOB_FILENAME, JSON.stringify(body), {
         access: 'public',
         addRandomSuffix: false,
       });
@@ -16,7 +16,7 @@ export default async function handler(req: Request): Promise<Response> {
         headers: { 'Content-Type': 'application/json' },
       });
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Error desconocido';
+      const message = error instanceof Error ? error.message : 'Error al guardar';
       return new Response(JSON.stringify({ error: message }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -26,14 +26,16 @@ export default async function handler(req: Request): Promise<Response> {
 
   if (req.method === 'GET') {
     try {
-      const blobDetails = await head(BLOB_URL_FILE);
+      const blobDetails = await head(BLOB_FILENAME);
       if (blobDetails && blobDetails.url) {
         const response = await fetch(blobDetails.url);
-        const data = await response.json();
-        return new Response(JSON.stringify(data), {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        });
+        if (response.ok) {
+          const data = await response.json();
+          return new Response(JSON.stringify(data), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        }
       }
       return new Response(JSON.stringify(null), { status: 404 });
     } catch {
