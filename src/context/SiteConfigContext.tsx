@@ -1,7 +1,15 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { initialCovers, initialPricingTiers, initialFaqs, initialBooktrailers } from '../data/content';
+import { covers as initialCovers, pricingTiers as initialPricingTiers, faqs as initialFaqs, booktrailers as initialBooktrailers } from '../data/content';
+
+export const DEFAULT_SITE_CONFIG = {
+  covers: initialCovers,
+  pricingTiers: initialPricingTiers,
+  faqs: initialFaqs,
+  booktrailers: initialBooktrailers,
+};
 
 interface SiteConfigContextType {
+  siteConfig: typeof DEFAULT_SITE_CONFIG;
   covers: any[];
   pricingTiers: any[];
   faqs: any[];
@@ -10,6 +18,7 @@ interface SiteConfigContextType {
   updatePricingTiers: (newTiers: any[]) => void;
   updateFaqs: (newFaqs: any[]) => void;
   updateBooktrailers: (newTrailers: any[]) => void;
+  resetToDefaults: () => void;
   isLoading: boolean;
 }
 
@@ -22,7 +31,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [booktrailers, setBooktrailers] = useState<any[]>(initialBooktrailers);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Cargar datos centralizados desde Vercel Blob al iniciar
+  // Cargar datos guardados desde Vercel Blob
   useEffect(() => {
     const fetchRemoteData = async () => {
       try {
@@ -37,7 +46,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           }
         }
       } catch (err) {
-        console.warn('Cargando datos locales por defecto...');
+        console.warn('Cargando valores por defecto...');
       } finally {
         setIsLoading(false);
       }
@@ -46,7 +55,6 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     fetchRemoteData();
   }, []);
 
-  // Función interna para sincronizar con la API en Vercel
   const saveToVercelBlob = async (updatedData: any) => {
     try {
       await fetch('/api/content', {
@@ -79,9 +87,25 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     saveToVercelBlob({ covers, pricingTiers, faqs, booktrailers: newTrailers });
   };
 
+  const resetToDefaults = () => {
+    setCovers(initialCovers);
+    setPricingTiers(initialPricingTiers);
+    setFaqs(initialFaqs);
+    setBooktrailers(initialBooktrailers);
+    saveToVercelBlob(DEFAULT_SITE_CONFIG);
+  };
+
+  const siteConfig = {
+    covers,
+    pricingTiers,
+    faqs,
+    booktrailers,
+  };
+
   return (
     <SiteConfigContext.Provider
       value={{
+        siteConfig,
         covers,
         pricingTiers,
         faqs,
@@ -90,6 +114,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         updatePricingTiers,
         updateFaqs,
         updateBooktrailers,
+        resetToDefaults,
         isLoading,
       }}
     >
