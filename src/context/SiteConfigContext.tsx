@@ -1,10 +1,26 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  initialCovers, 
-  pricingTiers as initialPricingTiers, 
-  faqs as initialFaqs, 
-  booktrailers as initialBooktrailers 
-} from '../data/content';
+import * as contentModule from '../data/content';
+
+// Extraer listas con máxima compatibilidad de nombres
+const initialCovers = 
+  contentModule.initialCovers || 
+  contentModule.covers || 
+  (contentModule.default && contentModule.default.covers) || [];
+
+const initialPricingTiers = 
+  contentModule.pricingTiers || 
+  contentModule.INITIAL_PRICING_TIERS || 
+  (contentModule.default && contentModule.default.pricingTiers) || [];
+
+const initialFaqs = 
+  contentModule.faqs || 
+  contentModule.INITIAL_FAQS || 
+  (contentModule.default && contentModule.default.faqs) || [];
+
+const initialBooktrailers = 
+  contentModule.booktrailers || 
+  contentModule.INITIAL_BOOKTRAILERS || 
+  (contentModule.default && contentModule.default.booktrailers) || [];
 
 export const DEFAULT_SITE_CONFIG = {
   covers: initialCovers,
@@ -50,7 +66,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             if (data.booktrailers) setBooktrailers(data.booktrailers);
           }
         }
-      } catch (err) {
+      } catch {
         console.warn('Cargando valores por defecto...');
       } finally {
         setIsLoading(false);
@@ -60,7 +76,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     fetchRemoteData();
   }, []);
 
-  const saveToVercelBlob = async (updatedData: any) => {
+  const saveToVercelBlob = async (updatedData: Record<string, any>) => {
     try {
       await fetch('/api/content', {
         method: 'POST',

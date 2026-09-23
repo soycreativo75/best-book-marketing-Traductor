@@ -6,8 +6,7 @@ export const config = {
 
 const BLOB_URL_FILE = 'site-config-data.json';
 
-export default async function handler(req: Request) {
-  // Manejo de CORS / Métodos
+export default async function handler(req: Request): Promise<Response> {
   if (req.method === 'POST') {
     try {
       const body = await req.json();
@@ -20,8 +19,9 @@ export default async function handler(req: Request) {
         status: 200,
         headers: { 'Content-Type': 'application/json' },
       });
-    } catch (error: any) {
-      return new Response(JSON.stringify({ error: error.message }), {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Error desconocido';
+      return new Response(JSON.stringify({ error: message }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -30,7 +30,6 @@ export default async function handler(req: Request) {
 
   if (req.method === 'GET') {
     try {
-      // Intentar obtener la URL del Blob existente
       const blobDetails = await head(BLOB_URL_FILE);
       if (blobDetails && blobDetails.url) {
         const response = await fetch(blobDetails.url);
