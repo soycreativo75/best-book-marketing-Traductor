@@ -30,13 +30,14 @@ interface SiteConfigContextType {
 const SiteConfigContext = createContext<SiteConfigContextType | undefined>(undefined);
 
 export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Inicializamos directamente con los datos locales para renderizado instantáneo
   const [covers, setCovers] = useState<any[]>(initialCovers);
   const [pricingTiers, setPricingTiers] = useState<any[]>(initialPricingTiers);
   const [faqs, setFaqs] = useState<any[]>(initialFaqs);
   const [booktrailers, setBooktrailers] = useState<any[]>(initialBooktrailers);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Cargar datos remotos respetando el fallback local si la nube está vacía
+  // Sincronizar en segundo plano si existen datos guardados en Vercel Blob
   useEffect(() => {
     const fetchRemoteData = async () => {
       try {
@@ -50,10 +51,8 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             if (Array.isArray(data.booktrailers) && data.booktrailers.length > 0) setBooktrailers(data.booktrailers);
           }
         }
-      } catch {
-        console.warn('Cargando valores predeterminados locales...');
-      } finally {
-        setIsLoading(false);
+      } catch (err) {
+        console.warn('Usando configuración local por defecto.', err);
       }
     };
 
@@ -68,7 +67,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
         body: JSON.stringify(updatedData),
       });
     } catch (err) {
-      console.error('Error al sincronizar con Vercel Blob:', err);
+      console.error('Error al guardar en Vercel Blob:', err);
     }
   };
 
@@ -79,7 +78,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const updatePricingTiers = (newTiers: any[]) => {
     setPricingTiers(newTiers);
-    saveToVercelBlob({ covers, pricingTiers: newTiers, faqs: newTiers, booktrailers });
+    saveToVercelBlob({ covers, pricingTiers: newTiers, faqs, booktrailers });
   };
 
   const updateFaqs = (newFaqs: any[]) => {
