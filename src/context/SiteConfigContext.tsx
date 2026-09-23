@@ -1,5 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { covers as initialCovers, pricingTiers as initialPricingTiers, faqs as initialFaqs, booktrailers as initialBooktrailers } from '../data/content';
+import { 
+  INITIAL_COVERS as initialCovers, 
+  INITIAL_PRICING_TIERS as initialPricingTiers, 
+  INITIAL_FAQS as initialFaqs, 
+  INITIAL_BOOKTRAILERS as initialBooktrailers 
+} from '../data/content';
 
 export const DEFAULT_SITE_CONFIG = {
   covers: initialCovers,
@@ -31,7 +36,7 @@ export const SiteConfigProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [booktrailers, setBooktrailers] = useState<any[]>(initialBooktrailers);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Cargar datos guardados desde Vercel Blob
+  // Cargar datos guardados desde Vercel Blob API
   useEffect(() => {
     const fetchRemoteData = async () => {
       try {
