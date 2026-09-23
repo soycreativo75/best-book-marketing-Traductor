@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <rect width="100%" height="100%" fill="none" />
+  <g fill="#00B2A9">
+    <!-- Left Top Leaf -->
+    <path d="M 380,340 C 375,280 345,210 240,165 C 235,162 225,160 225,160 L 320,160 C 385,215 390,285 388,340 Z" />
+    <!-- Left Middle Leaf -->
+    <path d="M 370,360 C 345,300 285,230 160,200 L 210,200 C 315,235 375,300 380,360 Z" />
+    <!-- Left Bottom Wing with long sharp outer tip -->
+    <path d="M 375,375 C 320,350 200,300 40,250 L 105,375 C 215,340 325,365 375,375 Z" />
+
+    <!-- Right Top Leaf -->
+    <path d="M 420,340 C 425,280 455,210 560,165 C 565,162 575,160 575,160 L 480,160 C 415,215 410,285 412,340 Z" />
+    <!-- Right Middle Leaf -->
+    <path d="M 430,360 C 455,300 515,230 640,200 L 590,200 C 485,235 425,300 420,360 Z" />
+    <!-- Right Bottom Wing with long sharp outer tip -->
+    <path d="M 425,375 C 480,350 600,300 760,250 L 695,375 C 585,340 475,365 425,375 Z" />
+  </g>
+  <text x="400" y="505" text-anchor="middle" font-family="'Gotham', 'Montserrat', sans-serif" font-weight="900" font-size="102" fill="#0A0E14" letter-spacing="-2">Best Book</text>
+  <text x="400" y="620" text-anchor="middle" font-family="'Gotham', 'Montserrat', sans-serif" font-weight="800" font-size="86" fill="#00B2A9" letter-spacing="1">Marketing</text>
+</svg>

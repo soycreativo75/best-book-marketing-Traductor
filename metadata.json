@@ -1,0 +1,6 @@
+{
+  "name": "Best Book Marketing",
+  "description": "Agencia de marketing editorial, maquetación profesional y posicionamiento Bestseller en Amazon KDP para autores independientes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
