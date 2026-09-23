@@ -1,3 +1,18 @@
+export const HERO_BOOK_PRESETS = [
+  {
+    id: 'hero-1',
+    title: 'El Bosque de los Mil Nombres',
+    author: 'José Luis Chávez',
+    coverImage: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=1000',
+  },
+  {
+    id: 'hero-2',
+    title: 'LADY BLOOD',
+    author: 'Wuicho Chávez',
+    coverImage: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=1000',
+  }
+];
+
 export const covers = [
   {
     id: '1',
@@ -61,6 +76,7 @@ export const booktrailers = [
 ];
 
 export const initialData = {
+  HERO_BOOK_PRESETS,
   covers,
   pricingTiers,
   faqs,
